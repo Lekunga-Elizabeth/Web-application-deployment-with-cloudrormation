@@ -1,0 +1,16 @@
+SCENARIO
+
+You work for a company that is rapidly expanding its online presence and needs to deploy a new web application on AWS. The application consists of an EC2 instance, an RDS database, and an Elastic Load Balancer. The company has strict security and compliance requirements and needs to ensure that all resources are created according to their standards. You have been tasked with using CloudFormation to create the stack of resources 
+and ensure that they meet the company's security requirements.
+
+Task:
+
+Using CloudFormation, create a stack of resources for the new web application. The stack should include an EC2 instance, an RDS database, and an Elastic Load Balancer. The resources should be created using the company's security and compliance standards, including:
+
+
+•	All resources must be deployed in a specific VPC and subnet.
+•	The EC2 instance must use a specific security group that allows inbound traffic only from the Elastic Load Balancer and outbound traffic only to the RDS database.
+•	The RDS database must use a specific security group that allows inbound traffic only from the EC2 instance and outbound traffic only to the Internet.
+•	The Elastic Load Balancer must use a specific security group that allows inbound traffic only from the Internet and outbound traffic only to the EC2 instance.
+
+Once the stack is created, test the web application by navigating to the DNS name of the load balancer and verify that you can access the application.

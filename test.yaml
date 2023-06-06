@@ -1,0 +1,81 @@
+# Create a VPC 
+Resources:
+  MywebVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "10.0.0.0/16"
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: MywebVPC
+
+# Create a subnet
+  Mywebsubnet:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      VpcId: !Ref MywebVPC
+      CidrBlock: "10.0.1.0/24"
+      AvailabilityZone: us-east-1
+      Tags:
+        - Key: Name
+          Value: Mywebsubnet
+
+#Create Security Group for the Load balancer
+  MyELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref MywebVPC
+      GroupDescription: security group for Load balancer
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80 # we open port 80 to allow traffic internet 
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress: # this creat us the out bound rules
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          DestinationSecurityGroupId: !Ref MyEC2SecurityGroup
+      Tags:
+      - Key: Name
+        Value: elb-db-sg
+
+# Create Security Group for our Ec2 Instance 
+  MyEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref MywebVPC
+      GroupDescription: security group for Ec2 instance
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80 
+          ToPort: 80
+          SourceSecurityGroupId: !Ref MyELBSecurityGroup
+      SecurityGroupEgress: 
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306 # this is a default port for my sql
+          DestinationSecurityGroupId: !Ref MyRDSSecurityGroup
+      Tags:
+      - Key: Name
+        Value: ec2-sg
+
+  # Create Security Group for RDS
+  MyRDSSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId: !Ref MywebVPC
+      GroupDescription: "Security group for the RDS database"
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref MyEC2SecurityGroup
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+      
